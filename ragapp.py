@@ -8,6 +8,9 @@ from chat_model import process_question
 from vectordb import create_vector_db,delete_vector_db
 from pdf_to_text import extract_all_pages_as_images
 
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 # Streamlit page configuration
 st.set_page_config(
