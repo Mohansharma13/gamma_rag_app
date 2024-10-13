@@ -176,7 +176,7 @@ python-multipart==0.0.12
 python-oxmsg==0.0.1
 python-pptx==1.0.2
 pytz==2024.2
-pywin32==307
+# pywin32==307
 PyYAML==6.0.2
 pyzmq==26.2.0
 RapidFuzz==3.10.0
