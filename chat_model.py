@@ -72,10 +72,17 @@ def process_question(question: str, vector_db: Chroma, selected_model: str) -> s
     # Add snippets of the context you used to answer the question.
     # """
     # RAG prompt
-    template = """Answer the question based ONLY on the following context:
-    {context}
-    Question: {question}
-    """
+    # template = """Answer the question based ONLY on the following context:
+    # {context}
+    # Question: {question}
+    # """
+    template = """
+        You are an AI language model. Answer the question using the following context and your own knowledge:
+        Context: {context}
+        Question: {question}
+
+        If the context does not provide sufficient information, use your own knowledge to answer the question. However, if you still don't know the answer, simply say that you don't know.
+        """
 
     prompt = ChatPromptTemplate.from_template(template)
 
