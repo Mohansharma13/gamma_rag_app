@@ -47,7 +47,7 @@ def main() -> None:
     Sets up the user interface, handles file uploads, and processes user queries.
     """
     # Display application title
-    st.subheader("IntelliQuest: Navigating Business Decisions 📈", divider="gray", anchor=False)
+    st.subheader("IntelliQuest 📈", divider="gray", anchor=False)
 
     available_models = extract_model_names()  # Get available model names
 
