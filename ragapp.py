@@ -9,9 +9,9 @@ from vectordb import create_vector_db, delete_vector_db
 from pdf_to_text import extract_all_pages_as_images
 
 # On non-Windows systems, switch to an alternative SQLite package for compatibility
-# __import__('pysqlite3')
-# import sys
-# sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 # Streamlit page configuration
 st.set_page_config(
