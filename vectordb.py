@@ -18,7 +18,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def create_vector_db(file_upload) -> Chroma:
+def create_vector_db(file_upload) -> Optional[Chroma]:
     """
     Create a vector database from an uploaded PDF file using SentenceTransformer embeddings.
 
@@ -26,48 +26,57 @@ def create_vector_db(file_upload) -> Chroma:
         file_upload (st.UploadedFile): Streamlit file upload object containing the PDF.
 
     Returns:
-        Chroma: A vector store containing the processed document chunks.
+        Optional[Chroma]: A vector store containing the processed document chunks if successful, None otherwise.
     """
-    # Log the beginning of the vector DB creation process
     logger.info(f"Creating vector DB from file upload: {file_upload.name}")
     
     # Create a temporary directory to store the uploaded PDF file
     temp_dir = tempfile.mkdtemp()
     path = os.path.join(temp_dir, file_upload.name)
     
-    # Write the uploaded PDF file content to the temporary file
-    with open(path, "wb") as f:
-        f.write(file_upload.getvalue())
-        logger.info(f"File saved to temporary path: {path}")
+    try:
+        # Write the uploaded PDF file content to the temporary file
+        with open(path, "wb") as f:
+            f.write(file_upload.getvalue())
+            logger.info(f"File saved to temporary path: {path}")
+        
+        # Load the PDF document
+        loader = UnstructuredPDFLoader(path)
+        data = loader.load()
+        
+        # Split the loaded document into manageable chunks
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=7500, chunk_overlap=100)
+        chunks = text_splitter.split_documents(data)
+        logger.info("Document split into chunks")
+
+        # Generate unique IDs for each chunk
+        ids = [f"chunk_{i}" for i in range(len(chunks))]
+
+        # Initialize embeddings using HuggingFace model
+        embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        
+        # Set the directory where the vector DB will be persisted
+        persist_directory = 'db'
+
+        # Create a Chroma vector DB from the document chunks
+        vector_db = Chroma.from_documents(
+            documents=chunks,
+            embedding=embedding,
+            persist_directory=persist_directory,
+            ids=ids  # Pass the unique IDs for each document chunk
+        )
+        logger.info("Vector DB created and persisted")
+        
+    except Exception as e:
+        logger.error(f"Error occurred during vector DB creation: {e}")
+        st.error("There was an issue creating the vector database.")
+        vector_db = None
     
-    # Load the PDF document using UnstructuredPDFLoader
-    loader = UnstructuredPDFLoader(path)
-    data = loader.load()
-    
-    # Split the loaded document into manageable chunks
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=7500, chunk_overlap=100)
-    chunks = text_splitter.split_documents(data)
-    logger.info("Document split into chunks")
+    finally:
+        # Clean up the temporary directory after use
+        shutil.rmtree(temp_dir)
+        logger.info(f"Temporary directory {temp_dir} removed")
 
-    # Initialize embeddings using HuggingFace model
-    embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    
-    # Set the directory where the vector DB will be persisted
-    persist_directory = 'db'
-
-    # Create a Chroma vector DB from the document chunks
-    vector_db = Chroma.from_documents(
-        documents=chunks, 
-        embedding=embedding, 
-        persist_directory=persist_directory
-    )
-    logger.info("Vector DB created and persisted")
-
-    # Clean up the temporary directory after use
-    shutil.rmtree(temp_dir)
-    logger.info(f"Temporary directory {temp_dir} removed")
-
-    # Return the created vector DB
     return vector_db
 
 

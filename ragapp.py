@@ -52,7 +52,7 @@ def main() -> None:
     available_models = extract_model_names()  # Get available model names
 
     # Create layout with two columns
-    col2, col1 = st.columns([2, 1.5])
+    col1, col2 = st.columns([1.5, 2])
 
     # Initialize session state variables if not already present
     if "messages" not in st.session_state:
