@@ -71,7 +71,7 @@ def login_signup():
     # Login Tab
     with tabs[0]:
         st.subheader("Login")
-        st.image("images\\banner2.png",width=1850)
+        st.image("https://static.gigabyte.com/StaticFile/Image/Global/ddce77e718b77562d0827649e0c3b3c8/ModelSectionChildItem/5670/png",width=1850)
         col11, col2 = st.columns([1.5, 2])
         with col11:
             username = st.text_input("Username", key="login_username")
@@ -87,7 +87,7 @@ def login_signup():
     # Signup Tab
     with tabs[1]:
         st.subheader("Signup")
-        st.image("images\\banner2.png",width=1850)
+        st.image("https://static.gigabyte.com/StaticFile/Image/Global/ddce77e718b77562d0827649e0c3b3c8/ModelSectionChildItem/5670/png",width=1850)
         col11, col2 = st.columns([1.5, 2])
         with col11:
             new_username = st.text_input("New Username", key="signup_username")
